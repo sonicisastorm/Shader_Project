@@ -61,14 +61,15 @@ export class Terrain {
     // ---- Material ------------------------------------------------
     this.material = new TerrainMaterial(materialOptions);
 
-    // ---- Mesh ----------------------------------------------------
-    this.mesh = new THREE.Mesh(this.geometry, this.material.shaderMaterial);
+    // Use a temporary invisible material so the mesh is never null
+    this.mesh = new THREE.Mesh(this.geometry, new THREE.MeshBasicMaterial({ visible: false }));
     this.mesh.name = 'terrain';
-    this.mesh.castShadow    = false;  // displacement is in vertex shader — no shadow map support
-    this.mesh.receiveShadow = false;
-
     scene.add(this.mesh);
 
+    // Swap in the real shader once it's compiled
+    this.material.whenReady().then(() => {
+      this.mesh.material = this.material.shaderMaterial;
+    });
     // ---- Bounding / helpers -------------------------------------
     //  Expand the bounding sphere to account for maximum displacement
     //  so frustum culling never clips the terrain incorrectly.
