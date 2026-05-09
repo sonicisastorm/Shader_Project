@@ -1,0 +1,21 @@
+{
+  "name": "shader-project",
+  "version": "1.0.0",
+  "description": "Student shader project — Three.js + custom GLSL",
+  "type": "module",
+  "scripts": {
+    "dev":   "vite",
+    "build": "vite build",
+    "test":  "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "three": "^0.164.0"
+  },
+  "devDependencies": {
+    "vite":    "^5.2.0",
+    "vitest":  "^1.5.0",
+    "jsdom":   "^24.0.0",
+    "@vitest/coverage-v8": "^1.5.0"
+  }
+}

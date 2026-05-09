@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shader Project</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; background: #0a0a1a; overflow: hidden; }
+      canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: block; }
+      #info {
+        position: fixed; top: 10px; left: 10px; z-index: 10;
+        color: #fff; font-family: monospace; font-size: 12px;
+        background: rgba(0,0,0,0.5); padding: 8px 12px; border-radius: 4px;
+        pointer-events: none; line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div id="info">
+      WASD — move &nbsp;|&nbsp; Mouse — look &nbsp;|&nbsp; Q/E — up/down &nbsp;|&nbsp; Shift — sprint<br>
+      B — toggle bloom &nbsp;|&nbsp; L — toggle blur
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
