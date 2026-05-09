@@ -1,9 +1,10 @@
 import * as THREE from 'three';
+import { Terrain } from './Terrain.js';
 
 export class SceneManager {
   constructor() {
     this.instance = new THREE.Scene();
-    this.instance.background = new THREE.Color(0x1a1a2e); // dark navy, not black
+    this.instance.background = new THREE.Color(0x1a1a2e);
 
     // Strong ambient so no face is pure black
     const ambient = new THREE.AmbientLight(0xffffff, 0.6);
@@ -32,10 +33,44 @@ export class SceneManager {
     });
     this._mesh = new THREE.Mesh(geo, mat);
     this.instance.add(this._mesh);
+
+    // Terrain — async because it fetches the GLSL files
+    this._terrain = null;
+    this._initTerrain(key);
+  }
+
+  async _initTerrain(keyLight) {
+    this._terrain = new Terrain(this.instance, { /* ...options */ });
+    await this._terrain.terrainMaterial.whenReady();
+
+    // Seed camera position immediately so fog doesn't start broken
+    if (this._camera) {
+      this._terrain.terrainMaterial.setCameraPosition(this._camera);
+    }
+
+    this._terrain.setPosition(0, -8, 0);
+  }
+
+  update(elapsed, camera) {
+    this._mesh.rotation.y = elapsed * 0.5;
+    this._mesh.rotation.x = elapsed * 0.2;
+
+    if (this._terrain) {
+      // Pass the actual camera — material.update() handles cameraPos sync
+      this._terrain.terrainMaterial.update(elapsed, camera);
+    }
   }
 
   update(elapsed, camPos) {
     this._mesh.rotation.y = elapsed * 0.5;
     this._mesh.rotation.x = elapsed * 0.2;
+
+    if (this._terrain) {
+      this._terrain.update(elapsed);
+      // Keep camera position in sync for fog + water specular
+      if (camPos) {
+        this._terrain.terrainMaterial.setCameraPosition({ position: camPos });
+      }
+    }
   }
 }
