@@ -26,11 +26,11 @@
 
 precision highp float;
 
-// Varyings from vertex shader
-varying vec2  v_uv;
-varying float v_height;
-varying vec3  v_worldNormal;
-varying vec3  v_worldPos;
+// Add `highp` explicitly to both vertex AND fragment
+varying highp vec2  v_uv;
+varying highp float v_height;
+varying highp vec3  v_worldNormal;
+varying highp vec3  v_worldPos;
 
 // Uniforms
 uniform vec3  u_lightDir;

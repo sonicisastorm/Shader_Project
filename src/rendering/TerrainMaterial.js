@@ -84,8 +84,10 @@ export class TerrainMaterial {
         fetchGLSL(SHADER_PATHS.fragment),
     ]);
 
-    const fullVert = [simplexSrc, perlinSrc, vertSrc].join('\n');
-    const fullFrag = [simplexSrc, fragSrc].join('\n');
+    const stripPrecision = src => src.replace(/^\s*precision\s+\w+\s+\w+\s*;\s*$/gm, '');
+
+    const fullVert = [stripPrecision(simplexSrc), stripPrecision(perlinSrc), vertSrc].join('\n');
+    const fullFrag = [stripPrecision(simplexSrc), fragSrc].join('\n');
 
     this.shaderMaterial = new THREE.ShaderMaterial({
         uniforms       : this._uniforms,
@@ -94,14 +96,24 @@ export class TerrainMaterial {
         side           : THREE.FrontSide,
     });
 
+    // Force Three.js to print the actual GLSL compile error
+    this.shaderMaterial.onBeforeCompile = (shader) => {
+        console.log('Compiling terrain shader...');
+    };
+
+    // Manually check compile status after forcing a compile
+    this.shaderMaterial.addEventListener?.('error', (e) => console.error('Shader error:', e));
+
+    // The real debug tool — log the full concatenated source so you can
+    // see line numbers when the browser reports an error
+    console.log('=== VERTEX SHADER ===');
+    console.log(fullVert);
+    console.log('=== FRAGMENT SHADER ===');
+    console.log(fullFrag);
+
     this.ready = true;
     return this.shaderMaterial;
     }
-
-  /**
-   * Resolves once the shader has been compiled and the material is usable.
-   * @returns {Promise<THREE.ShaderMaterial>}
-   */
   whenReady() {
     return this._loadPromise;
   }
