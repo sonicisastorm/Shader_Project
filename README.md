@@ -234,16 +234,6 @@ Tests run in Node.js with Three.js mocked — no browser or GPU needed.
 
 ---
 
-## Team
-
-| Teammate | Responsibility |
-|---|---|
-| Teammate A | Terrain, procedural noise, FBM shaders |
-| Teammate B | Phong lighting, Lights manager, ShaderMaterial base |
-| Teammate C | Camera, post-processing pipeline, core rendering loop |
-
----
-
 ## License
 
 MIT — free to use in your own projects.
