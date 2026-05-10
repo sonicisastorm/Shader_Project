@@ -43,8 +43,8 @@ export class App {
     // ── Post-processing (Teammate C) ─────────────────────────────
     this.post = new PostProcessor(
       this.renderer.instance,
-      this.sizes.width,
-      this.sizes.height,
+      Math.floor(this.sizes.width),
+      Math.floor(this.sizes.height),
       { bloom: true, blur: false },
     );
 
@@ -53,7 +53,7 @@ export class App {
       const { width, height, pixelRatio } = this.sizes;
       this.renderer.setSize(width, height, pixelRatio);
       this.camera._onResize();
-      this.post.setSize(width, height);
+      this.post.setSize(Math.floor(width), Math.floor(height));
     });
 
     // ── Loop ─────────────────────────────────────────────────────

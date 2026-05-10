@@ -20,7 +20,7 @@ export class Renderer {
       powerPreference: 'high-performance',
     });
     this.instance.setSize(sizes.width, sizes.height);
-    this.instance.setPixelRatio(sizes.pixelRatio);
+    this.instance.setPixelRatio(1);
     this.instance.outputColorSpace = THREE.SRGBColorSpace;
     this.instance.toneMapping      = THREE.NoToneMapping; // PostProcessor handles it
   }
