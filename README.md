@@ -50,33 +50,39 @@ Open `http://localhost:5173` in your browser.
 
 ## Using ShaderKit in your own project
 
-You can install ShaderKit as a dependency and use it to add real-time 3D to any website.
+You can embed ShaderKit into any Vite-based website by copying two folders across.
 
-### 1. Install
-
-```bash
-npm install https://github.com/sonicisastorm/shader-project.git
-```
-
-### 2. Copy the shaders folder
-
-ShaderKit loads GLSL files at runtime via `fetch()`.  
-Copy the `shaders/` folder into your project's `public/` directory:
+### 1. Clone the repo
 
 ```bash
-cp -r node_modules/shader-kit/shaders ./public/shaders
+git clone https://github.com/sonicisastorm/shader-project.git
 ```
 
-### 3. Add a canvas to your HTML
+### 2. Copy the folders into your project
+
+```bash
+cp -r shader-project/src ./your-project/src
+cp -r shader-project/shaders ./your-project/public/shaders
+```
+
+The `src/` folder contains all the JS modules. The `shaders/` folder must go inside `public/` so Vite serves the GLSL files at runtime.
+
+### 3. Install three.js
+
+```bash
+npm install three
+```
+
+### 4. Add a canvas to your HTML
 
 ```html
 <canvas id="c"></canvas>
 ```
 
-### 4. Import and initialise
+### 5. Import and initialise
 
 ```js
-import { App } from 'shader-kit';
+import { App } from './src/App.js';
 
 const canvas = document.querySelector('#c');
 const app = new App(canvas);
@@ -105,7 +111,7 @@ app.post.blurEnabled  = false;
 ### Use the Phong material on your own mesh
 
 ```js
-import PhongMaterial from 'shader-kit/src/rendering/PhongMaterial.js';
+import PhongMaterial from './src/rendering/PhongMaterial.js';
 import * as THREE from 'three';
 
 const mat = await PhongMaterial.create({
@@ -127,7 +133,7 @@ mat.update(elapsedTime, camera, lights.getUniforms());
 ### Use the post-processing pipeline standalone
 
 ```js
-import { PostProcessor } from 'shader-kit/src/postprocessing/PostProcessor.js';
+import { PostProcessor } from './src/postprocessing/PostProcessor.js';
 
 const post = new PostProcessor(renderer, width, height, {
   bloom: true,
@@ -143,7 +149,7 @@ post.render(); // outputs to screen
 ### Use just the blur pass
 
 ```js
-import { BlurPass } from 'shader-kit/src/postprocessing/BlurPass.js';
+import { BlurPass } from './src/postprocessing/BlurPass.js';
 
 const blur = new BlurPass(renderer, width, height, {
   passes:   3,      // more passes = smoother blur
@@ -173,8 +179,8 @@ shader-project/
 │       ├── blur.glsl          # Gaussian blur kernel
 │       └── bloom.glsl         # brightness extract + composite
 ├── src/
+│   ├── App.js                 # top-level entry point
 │   ├── core/
-│   │   ├── App.js             # top-level entry point
 │   │   ├── Renderer.js        # WebGLRenderer wrapper
 │   │   ├── Sizes.js           # reactive viewport dimensions
 │   │   └── Time.js            # elapsed + delta time
