@@ -39,7 +39,8 @@ export default class ShaderMaterial {
             uLightColor:   { value: new THREE.Vector3(1.0, 0.95, 0.8) },
             uAmbientColor: { value: new THREE.Vector3(0.15, 0.15, 0.25) },
             uCameraPos:    { value: new THREE.Vector3(0, 0, 0) },
-            uShininess:    { value: 32.0 },
+            uShininess:    { value: 128.0 },
+            uViewMode:     { value: 0 },
             ...uniforms,   // caller overrides win
         };
 

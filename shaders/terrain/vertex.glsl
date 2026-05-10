@@ -91,7 +91,8 @@ void main() {
     // 7. Varyings
     v_uv          = uv;
     v_height      = h * 0.5 + 0.5;
-    v_worldNormal = normalMatrix * approxNormal;
+    // Keep terrain normal in world space for world-space lighting in fragment.
+    v_worldNormal = normalize(mat3(modelMatrix) * approxNormal);
     v_worldPos    = (modelMatrix * vec4(displaced, 1.0)).xyz;
 
     gl_Position   = projectionMatrix * viewMatrix * modelMatrix * vec4(displaced, 1.0);
