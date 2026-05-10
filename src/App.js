@@ -85,6 +85,7 @@ export class App {
     cancelAnimationFrame(this._raf);
     this.camControl.destroy();
     this.camera.destroy();
+    this.scene.destroy?.();
     this.post.dispose();
     this.renderer.dispose();
     this.sizes.destroy();

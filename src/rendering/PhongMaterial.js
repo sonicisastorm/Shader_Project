@@ -13,6 +13,7 @@ import ShaderMaterial from './ShaderMaterial.js';
 
 // GLSL source paths
 const SHADER_PATHS = {
+    lighting: '/shaders/common/lighting.glsl',
     vertex:   '/shaders/phong/vertex.glsl',
     fragment: '/shaders/phong/fragment.glsl',
 };
@@ -71,15 +72,19 @@ export default class PhongMaterial extends ShaderMaterial {
      * @returns {Promise<PhongMaterial>}
      */
     static async create(options = {}) {
-        const [vertexSrc, fragmentSrc] = await Promise.all([
+        const [lightingSrc, vertexSrc, fragmentSrc] = await Promise.all([
+            fetchGLSL(SHADER_PATHS.lighting),
             fetchGLSL(SHADER_PATHS.vertex),
             fetchGLSL(SHADER_PATHS.fragment),
         ]);
 
+        const stripPrecision = (src) => src.replace(/^\s*precision\s+\w+\s+\w+\s*;\s*$/gm, '');
+        const fullFragment = [stripPrecision(lightingSrc), fragmentSrc].join('\n');
+
         return new PhongMaterial({
             ...options,
             _vertexSrc: vertexSrc,
-            _fragmentSrc: fragmentSrc,
+            _fragmentSrc: fullFragment,
         });
     }
 
@@ -115,5 +120,14 @@ export default class PhongMaterial extends ShaderMaterial {
      */
     setShininess(value) {
         this.uniforms.uShininess.value = value;
+    }
+
+    /**
+     * Set debug output mode.
+     * 0 = combined, 1 = ambient, 2 = diffuse, 3 = specular
+     * @param {number} mode
+     */
+    setViewMode(mode) {
+        this.uniforms.uViewMode.value = mode;
     }
 }

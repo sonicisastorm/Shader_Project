@@ -33,10 +33,9 @@ void main() {
     vec4 worldPos   = modelMatrix * vec4(position, 1.0);
     vWorldPosition  = worldPos.xyz;
 
-    // Transform normal to world space.
-    // normalMatrix = inverse-transpose of upper-left 3×3 of modelViewMatrix.
-    // This ensures normals stay perpendicular even under non-uniform scaling.
-    vNormal = normalize(normalMatrix * normal);
+    // Transform normal to world space so N/L/V all share the same space.
+    // For this project geometry path (no non-uniform scaling), mat3(modelMatrix) is sufficient.
+    vNormal = normalize(mat3(modelMatrix) * normal);
 
     // Pass through UVs for any texture sampling
     vUv = uv;
