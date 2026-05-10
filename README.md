@@ -3,7 +3,7 @@
 A browser-based real-time 3D shader engine built on Three.js.  
 All visuals — lighting, terrain, post-processing — are driven by **custom GLSL shaders**, not Three.js built-ins.
 
-> Built as a student-led project by Team C · May 2026
+> Built as a student-led project · May 2026
 
 ![Three.js](https://img.shields.io/badge/Three.js-v0.164-black?logo=three.js)
 ![Vite](https://img.shields.io/badge/Vite-v5-646CFF?logo=vite)
