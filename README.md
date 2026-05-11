@@ -19,6 +19,7 @@ All visuals — lighting, terrain, post-processing — are driven by **custom GL
 | 💡 Custom Phong lighting | Hand-written GLSL ambient + diffuse + specular |
 | ✦ Bloom + Gaussian blur | Separable blur, brightness threshold, Reinhard tone mapping |
 | 🎥 Free-fly camera | WASD + mouse look, smooth damping, sprint, Pointer Lock API |
+| 🎛 Scene Editor | In-browser GUI panel — add objects, tweak terrain & lighting live |
 | 🧪 Unit tested | Vitest — all modules tested without a browser or GPU |
 
 ---
@@ -45,6 +46,45 @@ Open `http://localhost:5173` in your browser.
 | B | Toggle bloom |
 | L | Toggle blur |
 | 1 / 2 / 3 / 4 | Isolate ambient / diffuse / specular / combined |
+
+> **Tip:** The Scene Editor panel (top-right corner) also switches view modes and tweaks everything without touching the keyboard.
+
+---
+
+## Scene Editor
+
+ShaderKit ships with a built-in GUI panel that appears in the top-right corner of the browser window. It launches automatically — no extra installation needed.
+
+### Sections
+
+| Section | What you can do |
+|---|---|
+| **View Mode** | Switch between Combined / Ambient / Diffuse / Specular |
+| **Add Object** | Drop a Box, Sphere, Cylinder, Torus, or Plane into the scene with a chosen size and colour |
+| **Objects** | See every editor-added object; click to select, ✕ to remove, or clear all at once |
+| **Transform** | Edit position, rotation, and scale (XYZ) of the selected object; toggle wireframe; adjust shininess |
+| **Terrain** | Tune Y-offset, amplitude, frequency, octaves, domain-warp strength, ridge blend, water blend, and fog density live |
+| **Scene** | Change ambient light colour and intensity; adjust global shininess; show/hide the debug cube |
+
+The panel is collapsible (click **–** in the header) and scrollable so it stays out of the way while you fly around.
+
+### Embedding the editor in your own project
+
+```js
+import { SceneEditor } from './src/scene/SceneEditor.js';
+
+// After creating your SceneManager and scene:
+const editor = new SceneEditor(sceneManager, scene);
+
+// Optional — call inside your animation loop for live updates:
+editor.update(elapsed);
+```
+
+To remove the panel at runtime:
+
+```js
+editor.destroy();
+```
 
 ---
 
@@ -88,7 +128,7 @@ const canvas = document.querySelector('#c');
 const app = new App(canvas);
 ```
 
-That's it. You now have a live terrain scene with bloom, camera controls, and Phong lighting running in your browser.
+That's it. You now have a live terrain scene with bloom, a free-fly camera, Phong lighting, and the Scene Editor running in your browser.
 
 ---
 
@@ -191,6 +231,7 @@ shader-project/
 │   │   └── OrbitControls.js   # fallback orbit camera
 │   ├── scene/
 │   │   ├── SceneManager.js    # scene coordinator
+│   │   ├── SceneEditor.js     # ← NEW: in-browser GUI editor panel
 │   │   ├── Terrain.js         # PlaneGeometry + material
 │   │   └── Lights.js          # light position + colour manager
 │   ├── rendering/
