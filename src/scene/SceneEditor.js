@@ -340,6 +340,11 @@ export class SceneEditor {
     this._sm = sceneManager;
     this._scene = scene;
 
+    /** ambient light editor state (color + intensity tracked separately so
+     *  either slider can change without resetting the other) */
+    this._ambientHex = '#262640';   // matches Lights default ~(0.15, 0.15, 0.25)
+    this._ambientIntensity = 1.0;
+
     /** tracked editor-added objects: { uuid, name, mesh } */
     this._objects = [];
     this._selected = null;
@@ -501,7 +506,6 @@ export class SceneEditor {
   );
 
   this._scene.add(mesh);
-    this._scene.add(mesh);
 
     const entry = {
       uuid: mesh.uuid,
@@ -718,25 +722,39 @@ export class SceneEditor {
   });
 }
 
+  /* ── Ambient helper ── */
+
+  /** Converts current hex + intensity to a 0-1 RGB Vector3 and pushes
+   *  it straight onto the Lights instance so SceneManager.update()
+   *  picks it up every frame automatically. */
+  _applyAmbient() {
+    if (!this._sm._lights) return;
+    const c = new THREE.Color(this._ambientHex);
+    this._sm._lights.setAmbientColor(
+      c.r * this._ambientIntensity,
+      c.g * this._ambientIntensity,
+      c.b * this._ambientIntensity,
+    );
+  }
+
   /* ── Scene-wide settings ── */
 
   _buildSceneSection() {
     return this._section('scene', 'Scene', cnt => {
       /* ambient light color */
       cnt.appendChild(labeledRow('Ambient',
-        colorInput('#ffffff', v => {
-          const c = new THREE.Color(v);
-          const u = this._sm._lights?.getUniforms?.();
-          if (u?.ambientColor) { u.ambientColor.value.set(c); }
+        colorInput(this._ambientHex, v => {
+          this._ambientHex = v;
+          this._applyAmbient();
         })
       ));
 
       /* ambient intensity */
       cnt.appendChild(labeledRow('Amb. Int.',
-        slider({ min: 0, max: 2, step: 0.01, value: 0.3, decimals: 2,
+        slider({ min: 0, max: 2, step: 0.01, value: this._ambientIntensity, decimals: 2,
           onChange: v => {
-            const u = this._sm._lights?.getUniforms?.();
-            if (u?.ambientIntensity) u.ambientIntensity.value = v;
+            this._ambientIntensity = v;
+            this._applyAmbient();
           }
         })
       ));
