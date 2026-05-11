@@ -6,6 +6,8 @@ import { Camera }           from './camera/Camera.js';
 import { CameraController } from './controls/CameraController.js';
 import { PostProcessor }    from './postprocessing/PostProcessor.js';
 import { SceneManager }     from './scene/SceneManager.js';
+import { SceneEditor }      from './scene/SceneEditor.js';
+
 
 /**
  * App.js — top-level integration point.
@@ -39,6 +41,13 @@ export class App {
 
     // ── Scene (Teammates A + B) ──────────────────────────────────
     this.scene = new SceneManager();
+
+        // After creating your SceneManager:
+    const editor = new SceneEditor(this.scene, this.scene.instance);
+
+    // Optionally in your animation loop:
+    editor.update(this.time.elapsed);
+
 
     // ── Post-processing (Teammate C) ─────────────────────────────
     this.post = new PostProcessor(
