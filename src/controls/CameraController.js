@@ -54,6 +54,11 @@ export class CameraController {
 
   _onPointerLockChange() {
     this._pointerLocked = document.pointerLockElement === this.domElement;
+    if (!this._pointerLocked) {
+      // Clear all held keys and kill velocity so movement stops instantly on Escape
+      Object.keys(this._keys).forEach(k => this._keys[k] = false);
+      this._velocity.set(0, 0, 0);
+    }
   }
 
   _onMouseMove(e) {
