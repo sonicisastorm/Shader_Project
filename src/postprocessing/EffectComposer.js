@@ -2,15 +2,6 @@ import * as THREE from 'three';
 
 /**
  * EffectComposer — ordered post-processing pipeline.
- *
- * FIX (v2): BlurPass and BloomPass both internally call setRenderTarget()
- * multiple times, which was leaving the renderer's active RT at null
- * mid-chain. This caused:
- *   - Blur: object disappears (scene RT gets overwritten)
- *   - Bloom: animation freezes (stale frame baked into RT, rotation stops)
- *
- * Solution: always restore the renderer render target after each pass,
- * and never ping-pong into a RT that is currently being read.
  */
 export class EffectComposer {
   constructor(renderer, width, height) {

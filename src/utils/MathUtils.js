@@ -1,6 +1,6 @@
 // ============================================================
 // src/utils/MathUtils.js
-// Linear algebra and math helpers — Person B (Nazrin)
+// Linear algebra and math helpers
 // ============================================================
 
 import * as THREE from 'three';

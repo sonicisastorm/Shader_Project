@@ -2,9 +2,6 @@ import * as THREE from 'three';
 
 /**
  * Renderer.js — WebGLRenderer setup.
- *
- * Teammate C wires PostProcessor here.
- * Teammate B connects scene output here.
  */
 export class Renderer {
   /**

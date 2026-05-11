@@ -3,8 +3,6 @@ import * as THREE from 'three';
 /**
  * Camera — PerspectiveCamera wrapper.
  * Owns the THREE.PerspectiveCamera and handles resize automatically.
- *
- * Teammates: access the raw camera via camera.instance
  */
 export class Camera {
   constructor({ fov = 60, near = 0.1, far = 1000, position } = {}) {

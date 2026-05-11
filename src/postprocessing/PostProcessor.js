@@ -18,8 +18,6 @@ import { BlurPass }       from './BlurPass.js';
  *   renderer.setRenderTarget(pp.sceneRT);
  *   renderer.render(scene, camera);
  *   pp.render(); // outputs to screen
- *
- * Teammates use pp.sceneRT as the render target for their scene.
  */
 export class PostProcessor {
   constructor(renderer, width, height, {

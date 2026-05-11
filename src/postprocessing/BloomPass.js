@@ -56,17 +56,6 @@ function quad(uniforms, frag) {
 
 /**
  * BloomPass — brightness extract → Gaussian blur → additive composite.
- *
- * FIX: All internal render steps now write to explicit RTs.
- * The previous version's internal BlurPass.render() always ended with
- * setRenderTarget(null) → wrote to screen mid-pipeline → the composite
- * step was reading a stale frame → bloom "froze" the animation visually.
- *
- * Key change: internal blur is run with a dedicated _blurOutputRT so
- * BlurPass never touches the screen target during bloom processing.
- *
- * Hot-toggle: bloomPass.enabled = false  (press B in-game)
- * Tune: bloomPass.threshold / bloomPass.intensity
  */
 export class BloomPass {
   constructor(renderer, width, height, {
@@ -122,9 +111,6 @@ export class BloomPass {
    * render(sceneRT, outputRT)
    *   outputRT = null → final output to screen
    *   outputRT = RT   → output to that RT (when more passes follow)
-   *
-   * FIX: internal blur writes to _blurOutputRT (never null/screen),
-   * so the compositor always reads fresh bloom data, preserving animation.
    */
   render(sceneRT, outputRT = null) {
     if (!this.enabled) {

@@ -1,6 +1,5 @@
 // ================================================================
 // shaders/common/lighting.glsl — shared Phong lighting helpers
-// Person B (Nazrin)
 //
 // Reusable Blinn-Phong lighting functions.
 // Any fragment shader can use these (concatenate or copy).

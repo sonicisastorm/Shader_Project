@@ -5,11 +5,6 @@
 // Manages the scene's light sources and provides a uniform
 // data object that PhongMaterial (and any other shader material)
 // can consume each frame via getUniforms().
-//
-// This class works alongside Three.js built-in lights that
-// Teammate C added in SceneManager — those light the
-// MeshStandardMaterial placeholder cube, while this class
-// feeds data to our custom GLSL shaders.
 // ============================================================
 
 import * as THREE from 'three';

@@ -800,7 +800,6 @@ export class SceneEditor {
     // Reserved for future live-sync of transform fields.
   }
 
-  /** Remove the editor panel entirely. */
   destroy() {
     this._root?.remove();
   }

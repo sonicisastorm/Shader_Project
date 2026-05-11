@@ -6,8 +6,6 @@
 //   - A consistent way to define vertex/fragment shaders + uniforms
 //   - A per-frame update() hook for time, camera, resolution
 //   - getMaterial() to hand the Three.js material to a Mesh
-//
-// Both PhongMaterial (B) and TerrainMaterial (A) can extend this.
 // ============================================================
 
 import * as THREE from 'three';

@@ -3,17 +3,6 @@
 //  Wraps THREE.ShaderMaterial for the terrain shaders.
 //  Loads GLSL sources, defines all uniforms, and exposes typed
 //  setters so the rest of the codebase never touches raw uniforms.
-//
-//  Build note
-//  ----------
-//  GLSL files are concatenated in load order:
-//    1. shaders/noise/simplex.glsl   (provides simplex2, fbm2, etc.)
-//    2. shaders/noise/perlin.glsl    (provides perlin2, perlin3)
-//    3. shaders/terrain/vertex.glsl
-//    4. shaders/terrain/fragment.glsl
-//
-//  If you use a bundler with glslify, replace the manual fetch
-//  approach with:  import vertSrc from './shaders/terrain/vertex.glsl';
 // =============================================================
 
 import * as THREE from 'three';

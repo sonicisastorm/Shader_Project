@@ -10,17 +10,7 @@ import { SceneEditor }      from './scene/SceneEditor.js';
 
 
 /**
- * App.js — top-level integration point.
- *
- * Wiring:
- *   Sizes → Renderer → Camera → CameraController
- *                    → SceneManager (Teammates A + B fill this in)
- *                    → PostProcessor → screen
- *
- * CHANGES vs previous version:
- *   - Renderer class restored (src/core/Renderer.js)
- *   - App now delegates renderer creation to Renderer instance
- *   - All other logic unchanged
+ * App.js — top-level integration point
  */
 export class App {
   constructor(canvas) {
@@ -39,7 +29,7 @@ export class App {
       { moveSpeed: 6 },
     );
 
-    // ── Scene (Teammates A + B) ──────────────────────────────────
+    // ── Scene ──────────────────────────────────
     this.scene = new SceneManager();
 
         // After creating your SceneManager:
@@ -49,7 +39,7 @@ export class App {
     editor.update(this.time.elapsed);
 
 
-    // ── Post-processing (Teammate C) ─────────────────────────────
+    // ── Post-processing ─────────────────────────────
     this.post = new PostProcessor(
       this.renderer.instance,
       Math.floor(this.sizes.width),
