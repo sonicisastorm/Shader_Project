@@ -8,6 +8,7 @@
  */
 
 import * as THREE from 'three';
+import PhongMaterial from '../rendering/PhongMaterial.js';
 
 /* ─────────────────────────── tiny helpers ─────────────────────────── */
 
@@ -475,28 +476,31 @@ export class SceneEditor {
     });
   }
 
-  _addObject(geoType, size, hexColor) {
-    let geo;
-    switch (geoType) {
-      case 'sphere':   geo = new THREE.SphereGeometry(size / 2, 32, 32); break;
-      case 'cylinder': geo = new THREE.CylinderGeometry(size / 2, size / 2, size, 32); break;
-      case 'torus':    geo = new THREE.TorusGeometry(size / 2, size / 5, 16, 100); break;
-      case 'plane':    geo = new THREE.PlaneGeometry(size, size); break;
-      default:         geo = new THREE.BoxGeometry(size, size, size); break;
-    }
+  async _addObject(geoType, size, hexColor) {
+  let geo;
+  switch (geoType) {
+    case 'sphere':   geo = new THREE.SphereGeometry(size / 2, 32, 32); break;
+    case 'cylinder': geo = new THREE.CylinderGeometry(size / 2, size / 2, size, 32); break;
+    case 'torus':    geo = new THREE.TorusGeometry(size / 2, size / 5, 16, 100); break;
+    case 'plane':    geo = new THREE.PlaneGeometry(size, size); break;
+    default:         geo = new THREE.BoxGeometry(size, size, size); break;
+  }
 
-    const mat = new THREE.MeshPhongMaterial({
-      color: new THREE.Color(hexColor),
-      shininess: 80,
-    });
+  // Wait for the phong material to be ready, then clone it
+  await this._sm._phongMaterial?.getMaterial()?.__loadPromise;
+  const mat = this._sm._phongMaterial?.getMaterial()?.clone();
 
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(
-      (Math.random() - 0.5) * 20,
-      size / 2,
-      (Math.random() - 0.5) * 20,
-    );
+  // Fallback to built-in if custom material not ready
+  const finalMat = mat ?? new THREE.MeshPhongMaterial({ color: new THREE.Color(hexColor), shininess: 80 });
 
+  const mesh = new THREE.Mesh(geo, finalMat);
+  mesh.position.set(
+    (Math.random() - 0.5) * 20,
+    size / 2,
+    (Math.random() - 0.5) * 20,
+  );
+
+  this._scene.add(mesh);
     this._scene.add(mesh);
 
     const entry = {
@@ -620,13 +624,6 @@ export class SceneEditor {
     cnt.appendChild(xyzRow('Rotation', 'rotation', -Math.PI * 2, Math.PI * 2));
     cnt.appendChild(xyzRow('Scale',    'scale',    0.01, 50));
 
-    /* color */
-    const hexVal = '#' + mesh.material.color.getHexString();
-    const colorPick = colorInput(hexVal, v => {
-      mesh.material.color.set(v);
-    });
-    cnt.appendChild(labeledRow('Color', colorPick));
-
     /* shininess */
     if (mesh.material.shininess !== undefined) {
       const shinRow = slider({
@@ -652,49 +649,74 @@ export class SceneEditor {
   /* ── Terrain settings ── */
 
   _buildTerrainSection() {
-    return this._section('terrain', 'Terrain', cnt => {
-      /* Y-position */
-      cnt.appendChild(labeledRow('Y Offset',
-        slider({ min: -30, max: 10, step: 0.1, value: -8, decimals: 1,
-          onChange: v => {
-            if (this._sm._terrain) this._sm._terrain.setPosition(0, v, 0);
-          }
-        })
-      ));
+  return this._section('terrain', 'Terrain', cnt => {
 
-      /* Fog density */
-      cnt.appendChild(labeledRow('Fog Density',
-        slider({ min: 0, max: 0.1, step: 0.001, value: 0, decimals: 3,
-          onChange: v => {
-            if (v === 0) {
-              this._scene.fog = null;
-            } else {
-              if (!this._scene.fog) {
-                this._scene.fog = new THREE.FogExp2(0x1a1a2e, v);
-              } else {
-                this._scene.fog.density = v;
-              }
-            }
-          }
-        })
-      ));
+    const tm = () => this._sm._terrain?.terrainMaterial;
 
-      /* BG color */
-      cnt.appendChild(labeledRow('BG Color',
-        colorInput('#1a1a2e', v => {
-          this._scene.background = new THREE.Color(v);
-          if (this._scene.fog) this._scene.fog.color.set(v);
-        })
-      ));
+    // Y position
+    cnt.appendChild(labeledRow('Y Offset',
+      slider({ min: -30, max: 10, step: 0.1, value: -8, decimals: 1,
+        onChange: v => { if (this._sm._terrain) this._sm._terrain.setPosition(0, v, 0); }
+      })
+    ));
 
-      /* note about wireframe */
-      cnt.appendChild((() => {
-        const note = el('div', { style: { color: 'var(--muted)', fontSize: '9px', lineHeight: '1.5' } },
-          '* Full terrain parameter control requires exposing options on your Terrain / TerrainMaterial classes.');
-        return note;
-      })());
-    });
-  }
+    // Amplitude
+    cnt.appendChild(labeledRow('Amplitude',
+      slider({ min: 0, max: 20, step: 0.1, value: 8, decimals: 1,
+        onChange: v => tm()?.setAmplitude(v)
+      })
+    ));
+
+    // Frequency
+    cnt.appendChild(labeledRow('Frequency',
+      slider({ min: 0.01, max: 0.3, step: 0.005, value: 0.08, decimals: 3,
+        onChange: v => tm()?.setFrequency(v)
+      })
+    ));
+
+    // Octaves
+    cnt.appendChild(labeledRow('Octaves',
+      slider({ min: 1, max: 8, step: 1, value: 6, decimals: 0,
+        onChange: v => tm()?.setOctaves(v)
+      })
+    ));
+
+    // Warp Strength
+    cnt.appendChild(labeledRow('Warp',
+      slider({ min: 0, max: 1, step: 0.01, value: 0.4, decimals: 2,
+        onChange: v => tm()?.setWarpStrength(v)
+      })
+    ));
+
+    // Ridge Blend
+    cnt.appendChild(labeledRow('Ridge',
+      slider({ min: 0, max: 1, step: 0.01, value: 0.3, decimals: 2,
+        onChange: v => tm()?.setRidgeBlend(v)
+      })
+    ));
+
+    // Sine Blend (water)
+    cnt.appendChild(labeledRow('Water',
+      slider({ min: 0, max: 1, step: 0.01, value: 0.0, decimals: 2,
+        onChange: v => tm()?.setSineBlend(v)
+      })
+    ));
+
+    // Fog density
+    cnt.appendChild(labeledRow('Fog',
+      slider({ min: 0, max: 0.02, step: 0.0005, value: 0.004, decimals: 4,
+        onChange: v => tm()?.setFogDensity(v)
+      })
+    ));
+
+    // BG color
+    cnt.appendChild(labeledRow('BG Color',
+      colorInput('#1a1a2e', v => {
+        this._scene.background = new THREE.Color(v);
+      })
+    ));
+  });
+}
 
   /* ── Scene-wide settings ── */
 
